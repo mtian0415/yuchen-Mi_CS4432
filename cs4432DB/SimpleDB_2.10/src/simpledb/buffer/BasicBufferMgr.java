@@ -10,6 +10,9 @@ import simpledb.file.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
+   //cs4432-project: 
+   private HashTable < Block, Integer> buffersInPool;
+
    
    /**
     * Creates a buffer manager having the specified number 
@@ -27,8 +30,10 @@ class BasicBufferMgr {
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
+      bufferInPool = new HashTable < Block, Integer> (numbuffs);
+
       for (int i=0; i<numbuffs; i++)
-         bufferpool[i] = new Buffer();
+         bufferpool[i] = new Buffer(i);
    }
    
    /**
@@ -57,6 +62,9 @@ class BasicBufferMgr {
          if (buff == null)
             return null;
          buff.assignToBlock(blk);
+
+         //cs4432_project1
+         buffersInPool.put(blk, getBufferPoolIndex());
       }
       if (!buff.isPinned())
          numAvailable--;
@@ -78,15 +86,16 @@ class BasicBufferMgr {
       if (buff == null)
          return null;
       buff.assignToNew(filename, fmtr);
+      buffersInPool.put(buff.block(), buff.getBufferPoolIndex());
       numAvailable--;
       buff.pin();
+    * Unpins the specified buffer.
+    * @param buff the buffer to be unpinned
+    */
       return buff;
    }
    
    /**
-    * Unpins the specified buffer.
-    * @param buff the buffer to be unpinned
-    */
    synchronized void unpin(Buffer buff) {
       buff.unpin();
       if (!buff.isPinned())
