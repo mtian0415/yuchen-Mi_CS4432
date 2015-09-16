@@ -19,6 +19,7 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
+   private int bufID; // CS4432-Project1: An integer to the ID of the buffer.
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -35,6 +36,24 @@ public class Buffer {
     * is called first.
     */
    public Buffer() {}
+   
+   /**
+    * CS4432-Project1
+    * Creates a new buffer with a specified buffer ID.
+    * @param bufID the ID of the new buffer
+    */
+   public Buffer(int bufID) {
+	   this.bufID = bufID;
+   }
+   
+   /**
+    * CS4432-Project1
+    * Returns the ID of the buffer.
+    * @return the ID of the buffer
+    */
+   public int getBufID() {
+	   return bufID;
+   }
    
    /**
     * Returns the integer value at the specified offset of the
