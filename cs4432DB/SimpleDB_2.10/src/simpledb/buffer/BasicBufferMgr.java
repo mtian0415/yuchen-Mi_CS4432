@@ -1,6 +1,7 @@
 package simpledb.buffer;
 
 import simpledb.file.*;
+import java.util.*; // CS4432-Project1: In order to use Stack
 
 /**
  * Manages the pinning and unpinning of buffers to blocks.
@@ -10,6 +11,7 @@ import simpledb.file.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
+   private Stack<Integer> freelist; // CS4432-Project1: A stack to store indexes of free buffers.
    
    /**
     * Creates a buffer manager having the specified number 
@@ -27,8 +29,11 @@ class BasicBufferMgr {
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
-      for (int i=0; i<numbuffs; i++)
-         bufferpool[i] = new Buffer();
+      freelist = new Stack<Integer>(); // CS4432-Project1: Allocate a new stack.
+      for (int i=0; i<numbuffs; i++) {
+    	  bufferpool[i] = new Buffer(i);
+       	  freelist.push(numbuffs -1 - i); // CS4432-Project1: Put all the indexes into the freelist.
+      }
    }
    
    /**
@@ -58,8 +63,23 @@ class BasicBufferMgr {
             return null;
          buff.assignToBlock(blk);
       }
-      if (!buff.isPinned())
+      if (!buff.isPinned()){
          numAvailable--;
+         int bufID = buff.getBufID(); // CS4432-Project1: Get the ID of the existing buffer.
+       	 int position = freelist.search(bufID); // CS4432-Project1: Find the position of that index in the freelist.
+       	 int[] temp = new int[position -1]; // CS4432-Project1: Allocate an array to store indexes.
+       	 // CS4432-Project1: Put all the indexes on the needed index into the array.
+       	 for (int i = 0; i < position - 1; i++){
+       		 temp[i] = freelist.pop();
+       	 }
+       	 // CS4432-Project1: Remove the corresponding ID in the freelist.
+       	 if (position > 0)
+       		 freelist.pop();
+         // CS4432-Project1: 
+       	 for (int i = 0; i < position - 1; i++){
+      		 freelist.push(temp[position - 1 - i]);
+      	 }
+      }
       buff.pin();
       return buff;
    }
@@ -89,8 +109,11 @@ class BasicBufferMgr {
     */
    synchronized void unpin(Buffer buff) {
       buff.unpin();
-      if (!buff.isPinned())
-         numAvailable++;
+      if (!buff.isPinned()) {
+          numAvailable++;
+          int BufferID = buff.getBufID(); // CS4432-Project1: 
+          freelist.push(BufferID); // CS4432-Project1: 
+      }
    }
    
    /**
@@ -111,9 +134,11 @@ class BasicBufferMgr {
    }
    
    private Buffer chooseUnpinnedBuffer() {
-      for (Buffer buff : bufferpool)
-         if (!buff.isPinned())
-         return buff;
+	  // CS4432-Project1: 
+	  if (!freelist.isEmpty()) {
+		  int BufferID = freelist.pop();
+		  return bufferpool[BufferID];
+	  }
       return null;
    }
 }
