@@ -1,7 +1,9 @@
 package simpledb.buffer;
 
+import java.io.Console;
+import java.util.Hashtable;
+
 import simpledb.file.*;
-import java.util.*; // CS4432-Project1: In order to use Stack
 
 /**
  * Manages the pinning and unpinning of buffers to blocks.
@@ -11,7 +13,8 @@ import java.util.*; // CS4432-Project1: In order to use Stack
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
-   private Stack<Integer> freelist; // CS4432-Project1: A stack to store indexes of free buffers.
+   //CS4432_Project1:
+   private Hashtable<Block, Integer> bufferPagesinPool; 
    
    /**
     * Creates a buffer manager having the specified number 
@@ -29,6 +32,7 @@ class BasicBufferMgr {
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
+      bufferPagesinPool = new Hashtable<Block, Integer>(numbuffs);     
       freelist = new Stack<Integer>(); // CS4432-Project1: Allocate a new stack.
       for (int i=0; i<numbuffs; i++) {
     	  bufferpool[i] = new Buffer(i);
@@ -62,6 +66,8 @@ class BasicBufferMgr {
          if (buff == null)
             return null;
          buff.assignToBlock(blk);
+         //CS4432-Project1: put the given block in the hashTable with its index
+         bufferPagesinPool.put(blk, buff.getBufferPoolIndex());
       }
       if (!buff.isPinned()){
          numAvailable--;
@@ -98,6 +104,8 @@ class BasicBufferMgr {
       if (buff == null)
          return null;
       buff.assignToNew(filename, fmtr);
+      //CS4432-project1:
+      bufferPagesinPool.put(buff.block(), buff.getBufferPoolIndex());
       numAvailable--;
       buff.pin();
       return buff;
@@ -125,12 +133,20 @@ class BasicBufferMgr {
    }
    
    private Buffer findExistingBuffer(Block blk) {
-      for (Buffer buff : bufferpool) {
-         Block b = buff.block();
-         if (b != null && b.equals(blk))
-            return buff;
-      }
-      return null;
+	   //CS4432_project1:Find the given block's index,if it is  exist 
+	   // return the buffer with that index else return null.
+	   Integer index = bufferPagesinPool.get(blk);
+	   if (index != null){
+		   return bufferpool[index];
+	   } else{
+		   return null;
+	   }
+//      for (Buffer buff : bufferpool) {
+//         Block b = buff.block();
+//         if (b != null && b.equals(blk))
+//            return buff;
+//      }
+//      return null;
    }
    
    private Buffer chooseUnpinnedBuffer() {

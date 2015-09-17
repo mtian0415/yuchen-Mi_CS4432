@@ -16,6 +16,8 @@ import simpledb.file.*;
 public class Buffer {
    private Page contents = new Page();
    private Block blk = null;
+   //CS4432-Project1:
+   private int bufferPoolIndex;
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
@@ -66,6 +68,18 @@ public class Buffer {
    public int getInt(int offset) {
       return contents.getInt(offset);
    }
+   
+  // CS4432-Project1:
+   public Buffer(int index){
+	   bufferPoolIndex = index;
+   }
+   
+
+   //CS4432-Project1:
+   public  Integer getBufferPoolIndex() {
+	// TODO Auto-generated method stub
+	return bufferPoolIndex;
+}
 
    /**
     * Returns the string value at the specified offset of the
