@@ -120,7 +120,8 @@ class BasicBufferMgr {
     * @param buff the buffer to be unpinned
     */
    synchronized void unpin(Buffer buff) {
-	   //if the specified buffer unpinned in the buffer pool, we need to remove the block which in that specified buffer from hashTable
+	   //CS4432_project1if the specified buffer unpinned in the buffer pool, 
+	   //we need to remove the block which in that specified buffer from hashTable
 	  if (buff.block() != null) {
 		  bufferPagesinPool.remove(buff.block().hashCode());	
 	  }
