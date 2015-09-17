@@ -1,9 +1,9 @@
 package simpledb.buffer;
 
-import java.io.Console;
 import java.util.Hashtable;
 
 import simpledb.file.*;
+import java.util.*; // CS4432-Project1: In order to use Stack
 
 /**
  * Manages the pinning and unpinning of buffers to blocks.
@@ -13,9 +13,11 @@ import simpledb.file.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
-   //CS4432_Project1:
-   private Hashtable<Block, Integer> bufferPagesinPool; 
-   
+
+   private Stack<Integer> freelist; // CS4432-Project1: A stack to store indexes of free buffers.
+   //CS4432_Project1: A hash table to store the Block and index 
+   private Hashtable<Integer, Integer> bufferPagesinPool; 
+
    /**
     * Creates a buffer manager having the specified number 
     * of buffer slots.
@@ -32,7 +34,8 @@ class BasicBufferMgr {
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
-      bufferPagesinPool = new Hashtable<Block, Integer>(numbuffs);     
+      //CS4432-Project1: Allocate  a new hash Table
+      bufferPagesinPool = new Hashtable<Integer, Integer>();
       freelist = new Stack<Integer>(); // CS4432-Project1: Allocate a new stack.
       for (int i=0; i<numbuffs; i++) {
     	  bufferpool[i] = new Buffer(i);
@@ -66,8 +69,8 @@ class BasicBufferMgr {
          if (buff == null)
             return null;
          buff.assignToBlock(blk);
-         //CS4432-Project1: put the given block in the hashTable with its index
-         bufferPagesinPool.put(blk, buff.getBufferPoolIndex());
+         //CS4432-Project1: add an entry into the hash table : block hash code -> buffer ID
+         bufferPagesinPool.put(blk.hashCode(), buff.getBufID());
       }
       if (!buff.isPinned()){
          numAvailable--;
@@ -89,8 +92,9 @@ class BasicBufferMgr {
       buff.pin();
       return buff;
    }
-   
-   /**
+
+
+/**
     * Allocates a new block in the specified file, and
     * pins a buffer to it. 
     * Returns null (without allocating the block) if 
@@ -105,7 +109,7 @@ class BasicBufferMgr {
          return null;
       buff.assignToNew(filename, fmtr);
       //CS4432-project1:
-      bufferPagesinPool.put(buff.block(), buff.getBufferPoolIndex());
+      //bufferPagesinPool.put(.block(), buff.getBufferPoolIndex());
       numAvailable--;
       buff.pin();
       return buff;
@@ -116,6 +120,11 @@ class BasicBufferMgr {
     * @param buff the buffer to be unpinned
     */
    synchronized void unpin(Buffer buff) {
+	   //if the specified buffer unpinned in the buffer pool, we need to remove the block which in that specified buffer from hashTable
+	  if (buff.block() != null) {
+		  bufferPagesinPool.remove(buff.block().hashCode());	
+	  }
+	   
       buff.unpin();
       if (!buff.isPinned()) {
           numAvailable++;
@@ -135,7 +144,7 @@ class BasicBufferMgr {
    private Buffer findExistingBuffer(Block blk) {
 	   //CS4432_project1:Find the given block's index,if it is  exist 
 	   // return the buffer with that index else return null.
-	   Integer index = bufferPagesinPool.get(blk);
+	   Integer index = bufferPagesinPool.get(blk.hashCode());
 	   if (index != null){
 		   return bufferpool[index];
 	   } else{
