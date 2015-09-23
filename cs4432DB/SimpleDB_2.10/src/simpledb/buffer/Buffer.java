@@ -18,6 +18,8 @@ public class Buffer {
    private Block blk = null;
    //CS4432-Project1:
    private int pins = 0;
+   //CS4432-Project1: keep track the last modify time
+   private long lastModified = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
    private int bufID; // CS4432-Project1: An integer to the ID of the buffer.
@@ -65,8 +67,14 @@ public class Buffer {
     * @return the integer value at that offset
     */
    public int getInt(int offset) {
+	   updateTime();
       return contents.getInt(offset);
    }
+    // CS4432+project1 Return the last modify date of buffer
+    public long getLastModifiedDate(){
+    	return lastModified;
+    }
+    
 
    /**
     * Returns the string value at the specified offset of the
@@ -77,6 +85,8 @@ public class Buffer {
     * @return the string value at that offset
     */
    public String getString(int offset) {
+	   //CS4432-Project1: Update modify time as current time
+	   updateTime();
       return contents.getString(offset);
    }
 
@@ -99,6 +109,8 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
+    //CS4432-Project1: Update modify time as current time
+      updateTime();
    }
 
    /**
@@ -120,6 +132,8 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
+    //CS4432-Project1: Update modify time as current time
+      updateTime();
    }
 
    /**
@@ -145,11 +159,16 @@ public class Buffer {
          modifiedBy = -1;
       }
    }
-
+ //CS4432-Project1: This method is update modify time as current time
+   private void updateTime() {
+	   lastModified = System.currentTimeMillis();
+   }
+   
    /**
     * Increases the buffer's pin count.
     */
    void pin() {
+	  updateTime();
       pins++;
    }
 
@@ -157,6 +176,7 @@ public class Buffer {
     * Decreases the buffer's pin count.
     */
    void unpin() {
+	   
       pins--;
    }
 
@@ -165,7 +185,7 @@ public class Buffer {
     * (that is, if it has a nonzero pin count).
     * @return true if the buffer is pinned
     */
-   boolean isPinned() {
+   public boolean isPinned() {
       return pins > 0;
    }
 
@@ -191,6 +211,8 @@ public class Buffer {
       blk = b;
       contents.read(blk);
       pins = 0;
+    //CS4432-Project1: Update modify time as current time
+      updateTime();
    }
 
    /**
@@ -206,5 +228,7 @@ public class Buffer {
       fmtr.format(contents);
       blk = contents.append(filename);
       pins = 0;
+    //CS4342_Project1:Used by LRU.Update the last modified time as current time if a block assign to a bufer.
+      updateTime();
    }
 }

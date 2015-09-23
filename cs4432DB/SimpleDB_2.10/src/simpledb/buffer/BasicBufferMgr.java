@@ -2,7 +2,9 @@ package simpledb.buffer;
 
 import java.util.Hashtable;
 
+import replacementPolicy.ReplacementPolicy;
 import simpledb.file.*;
+
 import java.util.*; // CS4432-Project1: In order to use Stack
 
 /**
@@ -17,6 +19,8 @@ class BasicBufferMgr {
    private Stack<Integer> freelist; // CS4432-Project1: A stack to store indexes of free buffers.
    //CS4432_Project1: A hash table to store the Block and index 
    private Hashtable<Integer, Integer> bufferPagesinPool; 
+   //CS4432_Project1: 
+   private ReplacementPolicy replacementPolicy;
 
    /**
     * Creates a buffer manager having the specified number 
@@ -158,12 +162,24 @@ class BasicBufferMgr {
 //      }
 //      return null;
    }
+   /* CS4432-project1: The purpose of this method to get an available buffer
+    * First, it tried to look for an empty frame by looking at the the freelist
+    * if there are no buffer, we try to choose our replacement policy(LRU or clock) to get a frame
+    * no frame could be available, it will return null
+    */
    
    private Buffer chooseUnpinnedBuffer() {
-	  // CS4432-Project1: 
+	  // CS4432-Project1: check if there exist empty buffers
+	   int BufferID = freelist.pop();
 	  if (!freelist.isEmpty()) {
-		  int BufferID = freelist.pop();
 		  return bufferpool[BufferID];
+	  }else{
+		  if(numAvailable == 0){
+			  return null;	  
+		  }else{
+			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
+		  }
+		  
 	  }
       return null;
    }
