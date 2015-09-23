@@ -94,6 +94,8 @@ class BasicBufferMgr {
       	 }
       }
       buff.pin();
+    //CS4432_Project1: set reference bit as 1
+      buff.setReferenceBit();
       return buff;
    }
 
@@ -116,6 +118,8 @@ class BasicBufferMgr {
       //bufferPagesinPool.put(.block(), buff.getBufferPoolIndex());
       numAvailable--;
       buff.pin();
+      //CS4432_Project1: set reference bit as 1
+      buff.setReferenceBit();
       return buff;
    }
    

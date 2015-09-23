@@ -23,6 +23,8 @@ public class Buffer {
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
    private int bufID; // CS4432-Project1: An integer to the ID of the buffer.
+   //CS4432-Project1: Set a reference bit to a buffer
+   private int referenceBit = 0;
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -47,6 +49,7 @@ public class Buffer {
     */
    public Buffer(int bufID) {
 	   this.bufID = bufID;
+	   updateTime();
    }
    
    /**
@@ -111,6 +114,21 @@ public class Buffer {
       contents.setInt(offset, val);
     //CS4432-Project1: Update modify time as current time
       updateTime();
+   }
+   
+   //CS4342-Project1: Set the reference bit as 1
+   public void setReferenceBit(){
+	   referenceBit = 1;
+   }
+   
+   //CS4342-Project1: Set the reference bit as 1
+   public void unSetReferenceBit(){
+	   referenceBit = 0;
+   }
+   
+   //CS4432-Project1: check if the current Buffer has a refefrence bit or not
+   public boolean isReferenceBitset(){
+	   return referenceBit == 1;	   
    }
 
    /**
