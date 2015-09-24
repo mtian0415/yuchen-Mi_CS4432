@@ -249,4 +249,18 @@ public class Buffer {
     //CS4342_Project1:Used by LRU.Update the last modified time as current time if a block assign to a bufer.
       updateTime();
    }
+   
+   
+   //CS4432_Project1:
+   public String toString() {
+	   String str = "";
+	   
+	   str = "(" +  this.bufID + ")";
+	   str += ",";
+	   str += (this.blk == null) ? "[]" : this.blk.toString();
+	   str += ",";
+	   str += (this.isPinned()) ? "Pinned" : "NotPinned";
+	   
+	   return str;
+   }
 }

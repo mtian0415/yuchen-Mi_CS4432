@@ -58,6 +58,8 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("Before page "+blk+" is pined the hashtable is:");
 	   this.printhashtable();
+	   //CS4432-Project1:
+	   System.out.println(this.toString());
       try {
          long timestamp = System.currentTimeMillis();
          Buffer buff = bufferMgr.pin(blk);
@@ -72,6 +74,8 @@ public class BufferMgr {
     	   this.printfreelist();
     	   System.out.println("After page "+blk+" is pined the hashtable is:");
     	   this.printhashtable();
+    	   //Cs4432-Project1:
+    	   System.out.println(this.toString());
          return buff;
       }
       catch(InterruptedException e) {
@@ -117,6 +121,8 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("Before page "+buff+" is unpined the hashtable is:");
       bufferMgr.unpin(buff);
+      //cs4432-Project1:
+      System.out.println(this.toString());
       if (!buff.isPinned())
          notifyAll();
       //CS4432_Project1: After unpin a page, print out the current state of free list and hash table.
@@ -124,6 +130,8 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("After page "+buff+" is unpined the hashtable is:");
 	   this.printhashtable();
+	   //cs4432-project1:
+	   System.out.println(this.toString());
    }
    
    /**
@@ -156,8 +164,9 @@ public class BufferMgr {
 	  Stack<Integer> temp = bufferMgr.getFreelist();
 	  Iterator<Integer> item = temp.iterator();
 	  while (item.hasNext()){
-		  System.out.println(item.next());
+		  System.out.print(item.next() + ",");
 	  }
+	  System.out.println();
  }
  
  //CS4432_Project1: print every block & frame ID in the hash table
@@ -169,6 +178,13 @@ public class BufferMgr {
 	      int block = itr.next();
 	      System.out.println("Block: "+ block + " Buffer id is " + temp.get(block));
 	    }	   
+ }
+ 
+ //CS4432-Project1:
+ public String toString() {
+	 return "----------------Buffers---------------\n" + 
+			 this.bufferMgr.toString() +
+			 "\n--------------------------------------";
  }
    
 }

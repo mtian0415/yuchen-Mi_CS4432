@@ -183,10 +183,11 @@ class BasicBufferMgr {
 			  return null;	  
 		  }else{
 			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
+			  return this.bufferpool[BufferID];
 		  }
 		  
 	  }
-      return null;
+      //return null;
    }
    
    //CS4432_Project1: return the free list 
@@ -197,5 +198,14 @@ class BasicBufferMgr {
    public Hashtable<Integer, Integer> getBufferPagesinPool() {
 		return bufferPagesinPool;
 	}
+   //CS4432-Project1:
+   public String toString() {
+	   String str = "";
+	 for(int i = 0; i < bufferpool.length -1; i++){
+		 str += bufferpool[i].toString();
+		 str += "\n";
+	 }
+	return str;
+   }
    
 }
