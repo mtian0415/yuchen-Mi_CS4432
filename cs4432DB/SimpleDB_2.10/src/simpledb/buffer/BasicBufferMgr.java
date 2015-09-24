@@ -80,17 +80,18 @@ class BasicBufferMgr {
          numAvailable--;
          int bufID = buff.getBufID(); // CS4432-Project1: Get the ID of the existing buffer.
        	 int position = freelist.search(bufID); // CS4432-Project1: Find the position of that index in the freelist.
+       	if (position > 0){
        	 int[] temp = new int[position -1]; // CS4432-Project1: Allocate an array to store indexes.
        	 // CS4432-Project1: Put all the indexes on the needed index into the array.
        	 for (int i = 0; i < position - 1; i++){
        		 temp[i] = freelist.pop();
        	 }
        	 // CS4432-Project1: Remove the corresponding ID in the freelist.
-       	 if (position > 0)
-       		 freelist.pop();
-         // CS4432-Project1: 
-       	 for (int i = 0; i < position - 1; i++){
-      		 freelist.push(temp[position - 1 - i]);
+      		 freelist.pop();
+      		 // CS4432-Project1: 
+      		 for (int i = 0; i < position - 1; i++){
+      			 freelist.push(temp[position - 1 - i]);
+      		 }
       	 }
       }
       buff.pin();
@@ -187,4 +188,14 @@ class BasicBufferMgr {
 	  }
       return null;
    }
+   
+   //CS4432_Project1: return the free list 
+   public Stack<Integer> getFreelist() {
+	return freelist;
+}
+   //CS4432_Project1: return the hash table of block and buffer page ID
+   public Hashtable<Integer, Integer> getBufferPagesinPool() {
+		return bufferPagesinPool;
+	}
+   
 }

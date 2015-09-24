@@ -1,5 +1,10 @@
 package simpledb.buffer;
 
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+
 import simpledb.file.*;
 
 /**
@@ -48,6 +53,11 @@ public class BufferMgr {
     * @return the buffer pinned to that block
     */
    public synchronized Buffer pin(Block blk) {
+	 //CS4432_Project1: before pin a page, print out the current state of free list and hash table.
+	   System.out.println("Before page "+blk+" is pined the freelist is:");
+	   this.printfreelist();
+	   System.out.println("Before page "+blk+" is pined the hashtable is:");
+	   this.printhashtable();
       try {
          long timestamp = System.currentTimeMillis();
          Buffer buff = bufferMgr.pin(blk);
@@ -57,6 +67,11 @@ public class BufferMgr {
          }
          if (buff == null)
             throw new BufferAbortException();
+       //CS4432_Project1: After pin a page, print out the current state of free list and hash table.
+         System.out.println("After page "+blk+" is pined the freelist is:");
+    	   this.printfreelist();
+    	   System.out.println("After page "+blk+" is pined the hashtable is:");
+    	   this.printhashtable();
          return buff;
       }
       catch(InterruptedException e) {
@@ -97,9 +112,18 @@ public class BufferMgr {
     * @param buff the buffer to be unpinned
     */
    public synchronized void unpin(Buffer buff) {
+	 //CS4432_Project1: before unpin a page, print out the current state of free list and hash table.
+	   System.out.println("Before page "+buff+" is unpined the freelist is:");
+	   this.printfreelist();
+	   System.out.println("Before page "+buff+" is unpined the hashtable is:");
       bufferMgr.unpin(buff);
       if (!buff.isPinned())
          notifyAll();
+      //CS4432_Project1: After unpin a page, print out the current state of free list and hash table.
+      System.out.println("After page "+buff+" is unpined the freelist is:");
+	   this.printfreelist();
+	   System.out.println("After page "+buff+" is unpined the hashtable is:");
+	   this.printhashtable();
    }
    
    /**
@@ -121,4 +145,30 @@ public class BufferMgr {
    private boolean waitingTooLong(long starttime) {
       return System.currentTimeMillis() - starttime > MAX_TIME;
    }
+ 
+   //CS4432_Project1: return a basic buffer manager
+   public BasicBufferMgr getBufferMgr() {
+		return bufferMgr;
+	}
+   
+   //CS4432_Project1: print every frame Id in the free list
+ public void printfreelist(){
+	  Stack<Integer> temp = bufferMgr.getFreelist();
+	  Iterator<Integer> item = temp.iterator();
+	  while (item.hasNext()){
+		  System.out.println(item.next());
+	  }
+ }
+ 
+ //CS4432_Project1: print every block & frame ID in the hash table
+ public void printhashtable(){
+	   Hashtable<Integer, Integer> temp = bufferMgr.getBufferPagesinPool();
+	   Set<Integer> set = temp.keySet();
+	   Iterator<Integer> itr = set.iterator();
+	    while (itr.hasNext()) {
+	      int block = itr.next();
+	      System.out.println("Block: "+ block + " Buffer id is " + temp.get(block));
+	    }	   
+ }
+   
 }
