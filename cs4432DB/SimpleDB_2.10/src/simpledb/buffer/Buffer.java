@@ -16,10 +16,12 @@ import simpledb.file.*;
 public class Buffer {
    private Page contents = new Page();
    private Block blk = null;
-   //CS4432-Project1:
+   //CS4432-Project1:keep track of number of pin, pin counter.
    private int pins = 0;
    //CS4432-Project1: keep track the last modify time
    private long lastModified = 0;
+ //CS4432-Project1: modifiedBy serves as dirty bit, if it is -1, the frame doesn't need to be written back to disk; 
+ //CS4432-Project1: else, frame has been modified by transaction, transaction id is modifiedBy value.
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
    private int bufID; // CS4432-Project1: An integer to the ID of the buffer.
@@ -73,7 +75,7 @@ public class Buffer {
 	   updateTime();
       return contents.getInt(offset);
    }
-    // CS4432+project1 Return the last modify date of buffer
+    // CS4432-project1 Return the last modify date of buffer
     public long getLastModifiedDate(){
     	return lastModified;
     }
@@ -108,6 +110,7 @@ public class Buffer {
     * @param lsn the LSN of the corresponding log record
     */
    public void setInt(int offset, int val, int txnum, int lsn) {
+	  //CS4432-Project1: This step set this frame dirty(has been modified), and record which transaction perform the modification. 
       modifiedBy = txnum;
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
@@ -146,6 +149,7 @@ public class Buffer {
     * @param lsn the LSN of the corresponding log record
     */
    public void setString(int offset, String val, int txnum, int lsn) {
+	  //CS4432-Project1: This step set this frame dirty(has been modified), and record which transaction perform the modification. 
       modifiedBy = txnum;
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
@@ -171,9 +175,11 @@ public class Buffer {
     * the page to disk.
     */
    void flush() {
+	 //CS4432-Project1: modifiedBy >= 0 means frame has been modified 
       if (modifiedBy >= 0) {
          SimpleDB.logMgr().flush(logSequenceNumber);
          contents.write(blk);
+         //CS4432-Project1: after been written to disk, set modifiedBy=-1 means frame is not dirty at this point.
          modifiedBy = -1;
       }
    }
@@ -214,6 +220,7 @@ public class Buffer {
     * @return true if the transaction modified the buffer
     */
    boolean isModifiedBy(int txnum) {
+	 //CS4432-Project1: check if modified by this transaction.
       return txnum == modifiedBy;
    }
 
@@ -251,7 +258,7 @@ public class Buffer {
    }
    
    
-   //CS4432_Project1:
+   //CS4432_Project1:display the state of buffer for testing purpose
    public String toString() {
 	   String str = "";
 	   

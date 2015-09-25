@@ -58,7 +58,7 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("Before page "+blk+" is pined the hashtable is:");
 	   this.printhashtable();
-	   //CS4432-Project1:
+	   //CS4432-Project1:display state of buffer
 	   System.out.println(this.toString());
       try {
          long timestamp = System.currentTimeMillis();
@@ -74,7 +74,7 @@ public class BufferMgr {
     	   this.printfreelist();
     	   System.out.println("After page "+blk+" is pined the hashtable is:");
     	   this.printhashtable();
-    	   //Cs4432-Project1:
+    	   //Cs4432-Project1:display state of buffer
     	   System.out.println(this.toString());
          return buff;
       }
@@ -121,7 +121,7 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("Before page "+buff+" is unpined the hashtable is:");
       bufferMgr.unpin(buff);
-      //cs4432-Project1:
+      //cs4432-Project1:display state of buffer
       System.out.println(this.toString());
       if (!buff.isPinned())
          notifyAll();
@@ -130,7 +130,7 @@ public class BufferMgr {
 	   this.printfreelist();
 	   System.out.println("After page "+buff+" is unpined the hashtable is:");
 	   this.printhashtable();
-	   //cs4432-project1:
+	   //cs4432-project1:display state of buffer
 	   System.out.println(this.toString());
    }
    
@@ -180,7 +180,7 @@ public class BufferMgr {
 	    }	   
  }
  
- //CS4432-Project1:
+ //CS4432-Project1:display state of buffer
  public String toString() {
 	 return "----------------Buffers---------------\n" + 
 			 this.bufferMgr.toString() +
