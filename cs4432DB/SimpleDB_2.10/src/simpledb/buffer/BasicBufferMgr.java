@@ -1,4 +1,6 @@
 package simpledb.buffer;
+import replacementPolicy.LRUPolicy;
+import replacementPolicy.ClockPolicy;
 
 import java.util.Hashtable;
 
@@ -35,9 +37,16 @@ class BasicBufferMgr {
     * is called first.
     * @param numbuffs the number of buffer slots to allocate
     */
-   BasicBufferMgr(int numbuffs) {
+   BasicBufferMgr(int numbuffs,String replacePolicyMode) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
+      
+      if(replacePolicyMode == "LRU"){
+    	  this.replacementPolicy = new LRUPolicy();	  
+      }else if(replacePolicyMode == "Clock"){
+    	  this.replacementPolicy = new ClockPolicy();
+      }
+      
       //CS4432-Project1: Allocate  a new hash Table
       bufferPagesinPool = new Hashtable<Integer, Integer>();
       freelist = new Stack<Integer>(); // CS4432-Project1: Allocate a new stack.
