@@ -17,11 +17,11 @@ import java.util.*; // CS4432-Project1: In order to use Stack
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
-
-   private Stack<Integer> freelist; // CS4432-Project1: A stack to store indexes of free buffers.
+   // CS4432-Project1: A stack to store id of free buffers.
+   private Stack<Integer> freelist; 
    //CS4432_Project1: A hash table to store the Block and index 
    private Hashtable<Integer, Integer> bufferPagesinPool; 
-   //CS4432_Project1: 
+   //CS4432_Project1: A replacement policy to choose when buffer pool is full.
    private ReplacementPolicy replacementPolicy;
 
    /**
@@ -41,9 +41,9 @@ class BasicBufferMgr {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
       
-      if(replacePolicyMode == "LRU"){
+      if(replacePolicyMode.equals("LRU")){
     	  this.replacementPolicy = new LRUPolicy();	  
-      }else if(replacePolicyMode == "Clock"){
+      }else if(replacePolicyMode.equals("Clock")){
     	  this.replacementPolicy = new ClockPolicy();
       }
       
@@ -88,16 +88,16 @@ class BasicBufferMgr {
       if (!buff.isPinned()){
          numAvailable--;
          int bufID = buff.getBufID(); // CS4432-Project1: Get the ID of the existing buffer.
-       	 int position = freelist.search(bufID); // CS4432-Project1: Find the position of that index in the freelist.
+       	 int position = freelist.search(bufID); // CS4432-Project1: Find the position of that index in the free list.
        	if (position > 0){
        	 int[] temp = new int[position -1]; // CS4432-Project1: Allocate an array to store indexes.
        	 // CS4432-Project1: Put all the indexes on the needed index into the array.
        	 for (int i = 0; i < position - 1; i++){
        		 temp[i] = freelist.pop();
        	 }
-       	 // CS4432-Project1: Remove the corresponding ID in the freelist.
+       	 // CS4432-Project1: Remove the corresponding ID in the free list.
       		 freelist.pop();
-      		 // CS4432-Project1: 
+      		 // CS4432-Project1:  push the rest of buffer id back.
       		 for (int i = 0; i < position - 1; i++){
       			 freelist.push(temp[position - 1 - i]);
       		 }
@@ -140,15 +140,15 @@ class BasicBufferMgr {
    synchronized void unpin(Buffer buff) {
 	   //CS4432_project1if the specified buffer unpinned in the buffer pool, 
 	   //we need to remove the block which in that specified buffer from hashTable
-	  if (buff.block() != null) {
-		  bufferPagesinPool.remove(buff.block().hashCode());	
-	  }
+//	  if (buff.block() != null) {
+//		  bufferPagesinPool.remove(buff.block().hashCode());	
+//	  }
 	   
       buff.unpin();
       if (!buff.isPinned()) {
           numAvailable++;
-          int BufferID = buff.getBufID(); // CS4432-Project1: 
-          freelist.push(BufferID); // CS4432-Project1: 
+//          int BufferID = buff.getBufID(); // CS4432-Project1: 
+//          freelist.push(BufferID); // CS4432-Project1: 
       }
    }
    
@@ -184,17 +184,22 @@ class BasicBufferMgr {
    
    private Buffer chooseUnpinnedBuffer() {
 	  // CS4432-Project1: check if there exist empty buffers
-	   int BufferID = freelist.pop();
-	  if (!freelist.isEmpty()) {
-		  return bufferpool[BufferID];
-	  }else{
+	   Integer BufferID = null;
+	   if (!freelist.empty()){
+	   BufferID= freelist.pop();}
+	  if (BufferID == null) {
 		  if(numAvailable == 0){
-			  return null;	  
-		  }else{
+		  BufferID = null;}
+		  else{
 			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
-			  return this.bufferpool[BufferID];
 		  }
 		  
+	  }
+	  if (BufferID != null){
+		  Buffer buff = bufferpool[BufferID];
+		  return buff;
+	  }else{
+		  return null;
 	  }
       //return null;
    }
