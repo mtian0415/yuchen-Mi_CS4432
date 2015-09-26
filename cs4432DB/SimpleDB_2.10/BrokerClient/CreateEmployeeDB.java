@@ -10,7 +10,8 @@ public class CreateEmployeeDB{
 		Connection conn = null;
 		try {
 			Driver d = new SimpleDriver();
-			String url = "jdbc:derby://localhost/studentdb;create=true";
+			String url = "jdbc:simpledb://localhost";
+			//String url = "jdbc:derby://localhost/studentdb;create=true";
 			conn = d.connect(url, null);
 			Statement stmt = conn.createStatement();
 

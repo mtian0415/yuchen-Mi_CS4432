@@ -264,6 +264,7 @@ public class Buffer {
 	   
 	   str = "(" +  this.bufID + ")";
 	   str += ",";
+	   str += "lastAccessTime: " + this.lastModified + ",";
 	   str += (this.blk == null) ? "[]" : this.blk.toString();
 	   str += ",";
 	   str += (this.isPinned()) ? "Pinned" : "NotPinned";

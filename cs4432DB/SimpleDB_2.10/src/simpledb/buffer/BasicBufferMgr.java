@@ -184,24 +184,18 @@ class BasicBufferMgr {
    
    private Buffer chooseUnpinnedBuffer() {
 	  // CS4432-Project1: check if there exist empty buffers
-	   Integer BufferID = null;
-	   if (!freelist.empty()){
-	   BufferID= freelist.pop();}
-	  if (BufferID == null) {
+	   int BufferID = freelist.pop();
+	  if (!freelist.isEmpty()) {
+		  return bufferpool[BufferID];
+	  }else{
 		  if(numAvailable == 0){
-		  BufferID = null;}
-		  else{
+			  return null;	  
+		  }else{
 			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
+			  return this.bufferpool[BufferID];
 		  }
 		  
 	  }
-	  if (BufferID != null){
-		  Buffer buff = bufferpool[BufferID];
-		  return buff;
-	  }else{
-		  return null;
-	  }
-      //return null;
    }
    
    //CS4432_Project1: return the free list 
