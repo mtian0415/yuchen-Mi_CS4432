@@ -184,22 +184,31 @@ class BasicBufferMgr {
     * if there are no buffer, we try to choose our replacement policy(LRU or clock) to get a frame
     * no frame could be available, it will return null
     */
-   
    private Buffer chooseUnpinnedBuffer() {
-	  // CS4432-Project1: check if there exist empty buffers
-	   int BufferID = freelist.pop();
-	  if (!freelist.isEmpty()) {
-		  return bufferpool[BufferID];
-	  }else{
-		  if(numAvailable == 0){
-			  return null;	  
-		  }else{
-			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
-			  return this.bufferpool[BufferID];
+		  // CS4432-Project1: check if there exist empty buffers
+		   Integer BufferID;
+		  if (!freelist.isEmpty()) {
+			  BufferID = freelist.pop();
+			  return bufferpool[BufferID];
 		  }
-		  
-	  }
-   }
+		  else {
+			  if(numAvailable == 0) {
+				  return null;	  
+			  }
+			  else {
+				  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);	
+				// CS4432-Project1: if hash table contains a block related to this buffer, 
+				 //we need to remove this record from hash table
+				  if (bufferPagesinPool.containsValue(BufferID)){
+					  int temp = bufferpool[BufferID].block().hashCode();
+					  bufferPagesinPool.remove(temp);
+				  }
+				  return this.bufferpool[BufferID];
+			  }
+			  
+		  }
+	      //return null;
+	   }
    
    //CS4432_Project1: return the free list 
    public Stack<Integer> getFreelist() {
