@@ -18,7 +18,26 @@ public class CreateBrokerDB {
 			s = "insert into BROKER(BrId, BrName, BrPrice) values ";
 			String[] brovals = { "(1, 'Thomas', 180)",
 					"(2, 'Charles', 190)", "(3, 'Jack', 150)",
-					"(4, 'Nora', 160)", "(5, 'Mila', 170)" };
+					"(4, 'Nora', 160)", 
+					"(5, 'Mila', 170)", 
+					"(6, 'kim', 200)",
+					 "(7, 'art', 180)",
+					 "(8, 'pat', 190)",
+					 "(9, 'lee', 130)",
+					 "(10, 'max', 160)",
+					 "(11, 'sue', 155)",
+					 "(12, 'bob', 180)",
+					 "(13, 'kim', 180)",
+					 "(14, 'mi', 185)",
+					 "(15, 'Jia', 190)",
+					 "(16, 'yuchen', 120)",
+					 "(17, 'zhoukai', 140)",
+					 "(18, 'yanyan', 150)",
+					 "(19, 'yifan', 155)",
+					 "(20, 'qingyu', 150)",
+					 "(21, 'elke', 170)",
+					 "(22, 'erika',140)",
+					 "(23, 'tj', 125)"};	
 			for (int i = 0; i < brovals.length; i++)
 				stmt.executeUpdate(s + brovals[i]);
 			System.out.println("BROKER records inserted.");
