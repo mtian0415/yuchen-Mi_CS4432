@@ -16,6 +16,11 @@ public class LRUPolicy implements ReplacementPolicy {
 				lru = i;		
 			}
 		}
+		
+		System.out.println("\n!!!!!! I am LRU policy !!!!!!\n");
+		System.out.println("I choose buffer number " + String.valueOf(lru) + " to replace\n");
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+		
 		return lru;
 	}
 	

@@ -27,6 +27,10 @@ public class ClockPolicy implements ReplacementPolicy{
 				
 		} while(unpinnedBuffer == -1);
 		
+		System.out.println("\n!!!!!! I am Clock policy !!!!!!\n");
+		System.out.println("I choose buffer number " + String.valueOf(unpinnedBuffer) + " to replace\n");
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+		
 		// TODO Auto-generated method stub
 		return  unpinnedBuffer;
 	}
