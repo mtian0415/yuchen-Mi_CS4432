@@ -53,13 +53,11 @@ public class BufferMgr {
     * @return the buffer pinned to that block
     */
    public synchronized Buffer pin(Block blk) {
-	 //CS4432_Project1: before pin a page, print out the current state of free list and hash table.
-	   System.out.println("Before page "+blk+" is pined the freelist is:");
-	   this.printfreelist();
-	   System.out.println("Before page "+blk+" is pined the hashtable is:");
-	   this.printhashtable();
-	   //CS4432-Project1:display state of buffer
-	   System.out.println(this.toString());
+	   //CS4432_Project1: before pin a page, print out the current state of free list, hash table, and buffers.
+	   System.out.println("-------------------Pin block: " + blk.toString() + "--------------------");
+	   System.out.println("                   <BEFORE>                   ");
+	   printBufferManagerStatus();
+	   
       try {
          long timestamp = System.currentTimeMillis();
          Buffer buff = bufferMgr.pin(blk);
@@ -69,14 +67,12 @@ public class BufferMgr {
          }
          if (buff == null)
             throw new BufferAbortException();
-       //CS4432_Project1: After pin a page, print out the current state of free list and hash table.
-         System.out.println("After page "+blk+" is pined the freelist is:");
-    	   this.printfreelist();
-    	   System.out.println("After page "+blk+" is pined the hashtable is:");
-    	   this.printhashtable();
-    	   //Cs4432-Project1:display state of buffer
-    	   System.out.println(this.toString());
-         return buff;
+         
+         	//CS4432_Project1: After pin a page, print out the current state of free list, hash table, and buffers
+			System.out.println("                   <AFTER>                   ");
+			printBufferManagerStatus();
+
+			return buff;
       }
       catch(InterruptedException e) {
          throw new BufferAbortException();
@@ -93,6 +89,10 @@ public class BufferMgr {
     * @return the buffer pinned to that block
     */
    public synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
+	   System.out.println("-------------------Pin new file: " + filename + "--------------------");
+	   System.out.println("                   <BEFORE>                   ");
+	   printBufferManagerStatus();
+	   
       try {
          long timestamp = System.currentTimeMillis();
          Buffer buff = bufferMgr.pinNew(filename, fmtr);
@@ -102,6 +102,10 @@ public class BufferMgr {
          }
          if (buff == null)
             throw new BufferAbortException();
+         
+  	     System.out.println("                   <AFTER>                   ");
+  	     printBufferManagerStatus();
+         
          return buff;
       }
       catch(InterruptedException e) {
@@ -117,21 +121,17 @@ public class BufferMgr {
     */
    public synchronized void unpin(Buffer buff) {
 	 //CS4432_Project1: before unpin a page, print out the current state of free list and hash table.
-	   System.out.println("Before page "+buff+" is unpined the freelist is:");
-	   this.printfreelist();
-	   System.out.println("Before page "+buff+" is unpined the hashtable is:");
-      bufferMgr.unpin(buff);
-      //cs4432-Project1:display state of buffer
-      System.out.println(this.toString());
-      if (!buff.isPinned())
+	   System.out.println("-------------------Unpin buffer: " + buff.toString() + "--------------------");
+	   System.out.println("                   <BEFORE>                   ");
+	   printBufferManagerStatus();
+	   
+	   bufferMgr.unpin(buff);
+
+       if (!buff.isPinned())
          notifyAll();
       //CS4432_Project1: After unpin a page, print out the current state of free list and hash table.
-      System.out.println("After page "+buff+" is unpined the freelist is:");
-	   this.printfreelist();
-	   System.out.println("After page "+buff+" is unpined the hashtable is:");
-	   this.printhashtable();
-	   //cs4432-project1:display state of buffer
-	   System.out.println(this.toString());
+	   System.out.println("                   <AFTER>                   ");
+	   printBufferManagerStatus();
    }
    
    /**
@@ -160,31 +160,40 @@ public class BufferMgr {
 	}
    
    //CS4432_Project1: print every frame Id in the free list
- public void printfreelist(){
-	  Stack<Integer> temp = bufferMgr.getFreelist();
-	  Iterator<Integer> item = temp.iterator();
-	  while (item.hasNext()){
-		  System.out.print(item.next() + ",");
-	  }
-	  System.out.println();
- }
- 
- //CS4432_Project1: print every block & frame ID in the hash table
- public void printhashtable(){
-	   Hashtable<Integer, Integer> temp = bufferMgr.getBufferPagesinPool();
-	   Set<Integer> set = temp.keySet();
-	   Iterator<Integer> itr = set.iterator();
-	    while (itr.hasNext()) {
-	      int block = itr.next();
-	      System.out.println("Block: "+ block + " Buffer id is " + temp.get(block));
-	    }	   
- }
- 
- //CS4432-Project1:display state of buffer
- public String toString() {
-	 return "----------------Buffers---------------\n" + 
-			 this.bufferMgr.toString() +
-			 "\n--------------------------------------";
- }
+	 public void printfreelist(){
+		  Stack<Integer> temp = bufferMgr.getFreelist();
+		  Iterator<Integer> item = temp.iterator();
+		  while (item.hasNext()){
+			  System.out.print(item.next() + ",");
+		  }
+		  System.out.println();
+	 }
+	 
+	 //CS4432_Project1: print every block & frame ID in the hash table
+	 public void printhashtable(){
+		   Hashtable<Integer, Integer> temp = bufferMgr.getBufferPagesinPool();
+		   Set<Integer> set = temp.keySet();
+		   Iterator<Integer> itr = set.iterator();
+		    while (itr.hasNext()) {
+		      int block = itr.next();
+		      System.out.println("Block: "+ block + " Buffer id is " + temp.get(block));
+		    }	   
+	 }
+	 
+	 //CS4432-Project1:display state of buffer
+	 public String toString() {
+		 return this.bufferMgr.toString() + "\n";
+	 }
+	 
+	 private void printBufferManagerStatus() {
+		 System.out.print("Free list:");
+		 this.printfreelist();
+		 System.out.println();
+		 System.out.println("Hash table:");
+		 this.printhashtable();
+		 System.out.println();
+		 System.out.println("Buffers:");
+		 System.out.println(this.toString());
+	 }
    
 }
