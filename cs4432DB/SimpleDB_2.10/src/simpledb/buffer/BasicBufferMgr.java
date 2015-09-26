@@ -187,14 +187,14 @@ class BasicBufferMgr {
    
    private Buffer chooseUnpinnedBuffer() {
 	  // CS4432-Project1: check if there exist empty buffers
-	   int BufferID = freelist.pop();
 	  if (!freelist.isEmpty()) {
+		  int BufferID = freelist.pop();
 		  return bufferpool[BufferID];
 	  }else{
 		  if(numAvailable == 0){
 			  return null;	  
 		  }else{
-			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);	
+			  int BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);	
 			  Buffer buf = this.bufferpool[BufferID];
 			  if (buf.block() != null) {
 				  bufferPagesinPool.remove(buf.block().hashCode());	
@@ -216,7 +216,7 @@ class BasicBufferMgr {
    //CS4432-Project1:
    public String toString() {
 	   String str = "";
-	 for(int i = 0; i < bufferpool.length -1; i++){
+	 for(int i = 0; i < bufferpool.length; i++){
 		 str += bufferpool[i].toString();
 		 str += "\n";
 	 }
