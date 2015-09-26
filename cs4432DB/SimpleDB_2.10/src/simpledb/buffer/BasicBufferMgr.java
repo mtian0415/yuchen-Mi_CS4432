@@ -194,8 +194,12 @@ class BasicBufferMgr {
 		  if(numAvailable == 0){
 			  return null;	  
 		  }else{
-			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);		  
-			  return this.bufferpool[BufferID];
+			  BufferID = replacementPolicy.chooseBufferForReplacement(bufferpool);	
+			  Buffer buf = this.bufferpool[BufferID];
+			  if (buf.block() != null) {
+				  bufferPagesinPool.remove(buf.block().hashCode());	
+			  }
+			  return buf;
 		  }
 		  
 	  }
