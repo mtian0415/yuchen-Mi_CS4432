@@ -83,6 +83,7 @@ class BasicBufferMgr {
             return null;
          buff.assignToBlock(blk);
          //CS4432-Project1: add an entry into the hash table : block hash code -> buffer ID
+         String blkStr = blk.toString();
          bufferPagesinPool.put(blk.hashCode(), buff.getBufID());
       }
       if (!buff.isPinned()){
@@ -125,7 +126,7 @@ class BasicBufferMgr {
          return null;
       buff.assignToNew(filename, fmtr);
       //CS4432-project1:
-      //bufferPagesinPool.put(.block(), buff.getBufferPoolIndex());
+      bufferPagesinPool.put(buff.block().hashCode(), buff.getBufID());
       numAvailable--;
       buff.pin();
       //CS4432_Project1: set reference bit as 1
@@ -163,7 +164,9 @@ class BasicBufferMgr {
    private Buffer findExistingBuffer(Block blk) {
 	   //CS4432_project1:Find the given block's index,if it is  exist 
 	   // return the buffer with that index else return null.
-	   Integer index = bufferPagesinPool.get(blk.hashCode());
+	   String blkStr = blk.toString();
+	   int hashCode = blk.hashCode();
+	   Integer index = bufferPagesinPool.get(hashCode);
 	   if (index != null){
 		   return bufferpool[index];
 	   } else{

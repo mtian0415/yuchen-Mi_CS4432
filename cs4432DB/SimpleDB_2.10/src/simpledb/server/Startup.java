@@ -12,7 +12,7 @@ public class Startup {
 		  return;
 	   }
 	   //
-	   if((args[1].equals("LRU")) && (args[1].equals("Clock"))){
+	   if((!args[1].equals("LRU")) && (!args[1].equals("Clock"))){
 		   System.out.println("The expected argument is either \"LRU\" or \"Clock\"");
 		   return;
 	   }
